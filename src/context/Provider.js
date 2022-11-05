@@ -10,6 +10,7 @@ function Provider({ children }) {
   const [filterColumn, setFilterColumn] = useState('population');
   const [comparison, setComparison] = useState('maior que');
   const [numberFilter, setNumberFilter] = useState(0);
+  const [multFilters, setMultFilters] = useState([]);
 
   useEffect(() => {
     const dataPlanets = async () => {
@@ -28,20 +29,33 @@ function Provider({ children }) {
   }, [nameInput]);
 
   const filterBtns = async () => {
-    const { results } = await getPlanets();
+    let resultados;
+    if (!multFilters.length) {
+      const { results } = await getPlanets();
+      resultados = results;
+    } else {
+      resultados = planets;
+    }
     switch (comparison) {
     case 'maior que': {
-      setPlanets(results.filter((planet) => planet[filterColumn] > Number(numberFilter)));
+      const filtrando = resultados
+        .filter((planet) => planet[filterColumn] > Number(numberFilter));
+      setPlanets(filtrando);
+      setMultFilters(filtrando);
       break;
     }
     case 'menor que': {
-      setPlanets(results.filter((planet) => planet[filterColumn] < Number(numberFilter)));
+      const filtrando = resultados
+        .filter((planet) => planet[filterColumn] < Number(numberFilter));
+      setPlanets(filtrando);
+      setMultFilters(filtrando);
       break;
     }
     case 'igual a': {
-      console.log('igual a');
-      setPlanets(results
-        .filter((planet) => planet[filterColumn] === numberFilter));
+      const filtrando = resultados
+        .filter((planet) => planet[filterColumn] === numberFilter);
+      setPlanets(filtrando);
+      setMultFilters(filtrando);
       break;
     }
     default:
