@@ -11,6 +11,47 @@ function Provider({ children }) {
   const [comparison, setComparison] = useState('maior que');
   const [numberFilter, setNumberFilter] = useState(0);
   const [multFilters, setMultFilters] = useState([]);
+  const [filterByNumericValues, setFilterByNumericValues] = useState({
+    filterByNumericValues: [],
+  });
+  const [arrayTeste, setArrayTeste] = useState([
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ]);
+  const [orderList, setOrderList] = useState({
+    order: {
+      column: 'population',
+      sort: 'ASC',
+    },
+  });
+
+  const handleOrderCheck = ({ target: { value } }) => {
+    setOrderList((prev) => ({
+      order: {
+        ...prev.order,
+        sort: value,
+      },
+    }));
+  };
+
+  const handleOrder = () => {
+    const { order: { column, sort } } = orderList;
+    const withoutUnk = planets.filter((planet) => planet[column] !== 'unknown');
+    const withUnk = planets.filter((planet) => planet[column] === 'unknown');
+    const neg = -1;
+    const ordered = withoutUnk
+      .sort((a, b) => (Number(a[column]) < Number(b[column]) ? neg : 1));
+    if (sort === 'DESC') {
+      ordered.reverse();
+    }
+    ordered.push(...withUnk);
+    setPlanets(() => ([
+      ...ordered,
+    ]));
+  };
 
   useEffect(() => {
     const dataPlanets = async () => {
@@ -28,6 +69,11 @@ function Provider({ children }) {
     dataPlanets();
   }, [nameInput]);
 
+  const removeColumnFilter = (column) => {
+    const removeColumn = arrayTeste.filter((item) => item !== column);
+    setArrayTeste(removeColumn);
+  };
+
   const filterBtns = async () => {
     let resultados;
     if (!multFilters.length) {
@@ -42,6 +88,18 @@ function Provider({ children }) {
         .filter((planet) => planet[filterColumn] > Number(numberFilter));
       setPlanets(filtrando);
       setMultFilters(filtrando);
+      const myObj = {
+        column: filterColumn,
+        comparison,
+        value: numberFilter,
+      };
+      setFilterByNumericValues((prev) => ({
+        filterByNumericValues: [
+          ...prev.filterByNumericValues,
+          myObj,
+        ],
+      }));
+      removeColumnFilter(filterColumn);
       break;
     }
     case 'menor que': {
@@ -51,15 +109,13 @@ function Provider({ children }) {
       setMultFilters(filtrando);
       break;
     }
-    case 'igual a': {
+    default: {
       const filtrando = resultados
         .filter((planet) => planet[filterColumn] === numberFilter);
       setPlanets(filtrando);
       setMultFilters(filtrando);
       break;
     }
-    default:
-      return console.log('default');
     }
   };
 
@@ -77,8 +133,20 @@ function Provider({ children }) {
     setComparison,
     setNumberFilter,
     filterBtns,
+    filterByNumericValues,
+    setFilterByNumericValues,
+    arrayTeste,
+    handleOrder,
+    handleOrderCheck,
+    setOrderList,
   }), [
-    // filterBtns,
+    handleOrderCheck,
+    handleOrder,
+    arrayTeste,
+    filterByNumericValues,
+    setFilterByNumericValues,
+    setPlanets,
+    setOrderList,
     numberFilter,
     planets,
     planetsKeys,

@@ -3,7 +3,12 @@ import MyContext from '../context/MyContext';
 import Filters from './Filters';
 
 function Table() {
-  const { planets, planetsKeys, handleNameInput } = useContext(MyContext);
+  const {
+    planets,
+    planetsKeys,
+    handleNameInput,
+  } = useContext(MyContext);
+
   return (
     <>
       <form>
@@ -21,9 +26,9 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {planets.map((planet, index) => (
+          {planets?.map((planet, index) => (
             <tr key={ index }>
-              <td>{planet.name}</td>
+              <td data-testid="planet-name">{planet.name}</td>
               <td>{planet.rotation_period}</td>
               <td>{planet.orbital_period}</td>
               <td>{planet.diameter}</td>

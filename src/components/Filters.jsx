@@ -8,6 +8,10 @@ function Filters() {
     setFilterColumn,
     setComparison,
     setNumberFilter,
+    arrayTeste,
+    handleOrder,
+    handleOrderCheck,
+    setOrderList,
   } = useContext(MyContext);
 
   return (
@@ -19,11 +23,9 @@ function Filters() {
             data-testid="column-filter"
             onChange={ ({ target: { value } }) => setFilterColumn(value) }
           >
-            <option value="population">population</option>
-            <option value="orbital_period">orbital_period</option>
-            <option value="diameter">diameter</option>
-            <option value="rotation_period">rotation_period</option>
-            <option value="surface_water">surface_water</option>
+            {arrayTeste.map((item, index) => (
+              <option key={ index } value={ item }>{item}</option>
+            ))}
           </select>
         </label>
         <label htmlFor="comparison-filter">
@@ -53,6 +55,54 @@ function Filters() {
         >
           Filtrar
         </button>
+        <div style={ { marginLeft: '20px' } }>
+          Ordenar:
+          <select
+            id="filter-order"
+            data-testid="column-sort"
+            onChange={ ({ target: { value } }) => {
+              setOrderList((prevState) => ({
+                order: {
+                  ...prevState.order,
+                  column: value,
+                },
+              }));
+            } }
+          >
+            <option value="population">population</option>
+            <option value="orbital_period">orbital_period</option>
+            <option value="diameter">diameter</option>
+            <option value="rotation_period">rotation_period</option>
+            <option value="surface_water">surface_water</option>
+          </select>
+          <div
+            onChange={ handleOrderCheck }
+          >
+            Ascendente:
+            <input
+              type="radio"
+              data-testid="column-sort-input-asc"
+              value="ASC"
+              name="sort"
+              onChange={ handleOrderCheck }
+            />
+            Descendente:
+            <input
+              type="radio"
+              data-testid="column-sort-input-desc"
+              value="DESC"
+              name="sort"
+              onChange={ handleOrderCheck }
+            />
+          </div>
+          <button
+            type="button"
+            data-testid="column-sort-button"
+            onClick={ handleOrder }
+          >
+            Enviar
+          </button>
+        </div>
       </div>
     </div>
 
